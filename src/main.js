@@ -6,11 +6,13 @@ import ElementUI from 'element-ui';
 import MyHttpServer from '@/plugins/http.js'
 import 'element-ui/lib/theme-chalk/index.css'
 import '@/assets/css/reset.css'
+import VueWechatTitle from 'vue-wechat-title'; 
 import router from './router'
 
 // 引入Vue插件
 Vue.use(ElementUI);
 Vue.use(MyHttpServer)
+Vue.use(VueWechatTitle)
 
 Vue.config.productionTip = false
 
