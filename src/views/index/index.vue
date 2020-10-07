@@ -6,21 +6,32 @@
         background-color="#545c64"
         text-color="#fff"
         active-text-color="#1890ff"
-        unique-opened
         :collapse="isclose"
         :collapse-transition="false"
+        router
+        unique-opened
+        :default-active="actvieUrl"
       >
         <!-- 一级菜单 -->
-        <el-submenu v-for="item in menuList" :key="item.menuId" :index="item.menuId + ''">
+        <el-submenu
+          v-for="item in menuList"
+          :key="item.menuId"
+          :index="item.url + ''"
+        >
           <template slot="title">
             <i class="el-icon-location"></i>
-            <span>{{item.menuName}}</span>
+            <span>{{ item.menuName }}</span>
           </template>
           <!-- 子菜单 -->
-          <el-menu-item v-for="itemChildren in item.children" :key="itemChildren.menuId" :index="itemChildren.menuId + ''">
+          <el-menu-item
+            v-for="itemChildren in item.children"
+            @click="saveNavState('/' + itemChildren.url)"
+            :key="itemChildren.menuId"
+            :index="'/' + itemChildren.url"
+          >
             <template slot="title">
               <i class="el-icon-location"></i>
-              <span>{{itemChildren.menuName}}</span>
+              <span>{{ itemChildren.menuName }}</span>
             </template>
           </el-menu-item>
         </el-submenu>
@@ -28,9 +39,23 @@
     </el-aside>
     <el-container>
       <el-header>
-          <el-button type="info" @click="isclosed" icon="el-icon-s-unfold" />
+        <el-menu
+          background-color="#545c64"
+          text-color="#fff"
+          active-text-color="#ffd04b"
+        >
+          <el-submenu class="head" index="2">
+            <template slot="title">个人中心</template>
+            <el-menu-item index="2-1">选项1</el-menu-item>
+            <el-menu-item index="2-2">选项2</el-menu-item>
+            <el-menu-item index="2-3">选项3</el-menu-item>
+          </el-submenu>
+        </el-menu>
       </el-header>
-      <el-main>Main</el-main>
+      <el-main>
+        <!-- 路由占位符 -->
+        <router-view />
+      </el-main>
     </el-container>
   </el-container>
 </template>
@@ -42,32 +67,37 @@ export default {
     return {
       // 左侧菜单数据
       menuList: [],
-      isclose: false
+      // 是否折叠
+      isclose: false,
+      // 被激活的链接地址
+      actvieUrl: '',
     }
   },
   created() {
     this.getMenus()
+    this.actvieUrl = sessionStorage.getItem('actvieUrl')
   },
   methods: {
     getMenus() {
-      this.$http
-        .get('index', {
-          withCredentials: true,
-        })
-        .then((res) => {
-          if (res.data.code === 0) {
-            const {data} = res.data.data
-            this.menuList = data
-            console.log('数据是'+data)
-          } else {
-            this.$message.error(res.data.info)
-          }
-        })
+      this.$http.get('index').then((res) => {
+        if (res.data.code === 0) {
+          const { data } = res.data.data
+          this.menuList = data
+          console.log('数据是' + data)
+        } else {
+          this.$message.error(res.data.info)
+        }
+      })
     },
     //展开/合闭 菜单
     isclosed() {
       this.isclose = !this.isclose
-    }
+    },
+    // 链接激活状态
+    saveNavState(actvieUrl) {
+      sessionStorage.setItem('actvieUrl', actvieUrl)
+      this.actvieUrl = actvieUrl
+    },
   },
   beforeCreate() {
     const id = sessionStorage.getItem('Authorization')
@@ -100,12 +130,17 @@ export default {
 }
 
 .el-main {
-  background-color: beige;
+  background-color: white;
   color: #333;
   text-align: center;
   line-height: 160px;
 }
-
+.head {
+  width: 250px;
+  border: none;
+  position: absolute;
+  left: 1550px;
+}
 
 .el-icon-location {
   margin-right: 10px;

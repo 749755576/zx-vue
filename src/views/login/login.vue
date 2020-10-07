@@ -33,64 +33,62 @@
 </template>
 
 <script>
-import { setCookie, getCookie, delCookie } from "@/components/utils/utils";
+import { setCookie, getCookie, delCookie } from '@/components/utils/utils'
 export default {
   data() {
     return {
       ruleForm: {
-        loginName: "",
-        password: "",
+        loginName: '',
+        password: '',
       },
       rules: {
         loginName: [
-          { required: true, message: "请输入用户名", trigger: "blur" },
+          { required: true, message: '请输入用户名', trigger: 'blur' },
           {
             min: 5,
             max: 20,
-            message: "长度在 3 到 20 个字符",
-            trigger: "blur",
+            message: '长度在 3 到 20 个字符',
+            trigger: 'blur',
           },
         ],
         password: [
-          { required: true, message: "请输入密码", trigger: "blur" },
+          { required: true, message: '请输入密码', trigger: 'blur' },
           {
             min: 5,
             max: 20,
-            message: "长度在 3 到 20 个字符",
-            trigger: "blur",
+            message: '长度在 3 到 20 个字符',
+            trigger: 'blur',
           },
         ],
       },
       formdata: {
-        loginName: "",
-        password: "",
+        loginName: '',
+        password: '',
       },
-    };
+    }
   },
   methods: {
     handleLogin() {
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
-          if(sessionStorage.getItem("Authorization")) {
+          if (sessionStorage.getItem('Authorization')) {
             sessionStorage.clear()
           }
-          this.$http
-            .post("auth", this.formdata, { withCredentials: true })
-            .then((res) => {
-              if (res.data.code === 0) {
-                sessionStorage.setItem("Authorization", res.data.info)
-                var exdate = new Date();
-                setCookie("Authorization", res.data.info, exdate)
-                console.log(res.data.info);
-                this.$router.push({ name: "index" })
-                this.$message({
-                  message: "登录成功",
-                  type: "success",
-                });
-              } else {
-                this.$message.error(res.data.info)
-              }
-            })
+          this.$http.post('auth', this.formdata).then((res) => {
+            if (res.data.code === 0) {
+              sessionStorage.setItem('Authorization', res.data.info)
+              var exdate = new Date()
+              setCookie('Authorization', res.data.info, exdate)
+              console.log(res.data.info)
+              this.$router.push({ name: 'index' })
+              this.$message({
+                message: '登录成功',
+                type: 'success',
+              })
+            } else {
+              this.$message.error(res.data.info)
+            }
+          })
         }
       })
     },
@@ -101,7 +99,7 @@ export default {
 <style>
 .login-wrap {
   height: 100%;
-  background-image: url("../../assets/imges/zx-login.jpg");
+  background-image: url('../../assets/imges/zx-login.jpg');
   /* 弹性盒布局 */
   display: flex;
   justify-content: center;

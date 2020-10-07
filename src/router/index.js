@@ -1,7 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Login from '@/components/login/login'
-import index from '@/components/index/index'
+import Login from '@/views/login/login'
+import index from '@/views/index/index'
+import welcome from '@/views/index/welcome'
+import user from '@/views/user/user'
+
 Vue.use(Router)
 
 export default new Router({
@@ -16,6 +19,11 @@ export default new Router({
       name: 'index',
       path: '/',
       component: index,
+      redirect: '/welcome',
+      children: [
+        {name: 'welcome',path: '/welcome',component: welcome,},
+        {name: 'user',path: '/user',component: user}
+      ],
       meta: {title: '紫夕商城管理系统'}
     }
   ]
