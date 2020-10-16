@@ -6,152 +6,135 @@
       <el-breadcrumb-item>系统管理</el-breadcrumb-item>
       <el-breadcrumb-item>用户管理</el-breadcrumb-item>
     </el-breadcrumb>
-
-    <!-- 卡片视图区域 -->
-    <el-card class="box-card">
-      <!-- 搜索框 -->
-      <el-row :gutter="20">
-        <el-col :span="5">
-          <el-input
-            placeholder="请输入用户名"
-            v-model="queryInfo.loginName"
-            clearable
-            @clear="getUserList"
+    <!-- 搜索框 -->
+    <el-row :gutter="20">
+      <el-col :span="5">
+        <el-input
+          placeholder="请输入用户名"
+          v-model="queryInfo.loginName"
+          clearable
+          @clear="getUserList"
+        >
+          <el-button slot="append" icon="el-icon-search" @click="getUserList" />
+        </el-input>
+      </el-col>
+      <el-col :span="2">
+        <el-button type="primary" @click="addUser">添加用户</el-button>
+      </el-col>
+    </el-row>
+    <!-- 用户列表 -->
+    <el-table :data="userList" style="width: 100%" stripe>
+      <el-table-column type="selection" width="55"> </el-table-column>
+      <el-table-column
+        width="100"
+        align="center"
+        label="用户编号"
+        prop="userId"
+      />
+      <el-table-column
+        width="200"
+        align="center"
+        label="用户名"
+        prop="loginName"
+      />
+      <el-table-column width="100" align="center" label="性别" prop="sex">
+        <template slot-scope="scope">
+          <span v-if="scope.row.sex === 0">男</span>
+          <span v-else>女</span>
+        </template>
+      </el-table-column>
+      <el-table-column width="200" align="center" label="email" prop="email" />
+      <el-table-column
+        width="180"
+        align="center"
+        label="创建人"
+        prop="createBy"
+      />
+      <el-table-column
+        width="150"
+        align="center"
+        label="真实姓名"
+        prop="userName"
+      />
+      <el-table-column width="200" align="center" label="状态" prop="status">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.status"
+            active-value="0"
+            inactive-value="1"
+            @change="handleStatusChange(scope.row)"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+          >
+          </el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column width="200" align="center" label="介绍" prop="remark" />
+      <!-- 按钮区域 -->
+      <el-table-column width="230" align="center" label="操作">
+        <template slot-scope="scope">
+          <el-tooltip
+            :enterable="false"
+            class="item"
+            effect="dark"
+            content="修改用户"
+            placement="top"
           >
             <el-button
-              slot="append"
-              icon="el-icon-search"
-              @click="getUserList"
-            />
-          </el-input>
-        </el-col>
-        <el-col :span="2">
-          <el-button type="primary" @click="addUser">添加用户</el-button>
-        </el-col>
-      </el-row>
-      <!-- 用户列表 -->
-      <el-table :data="userList" style="width: 100%" stripe>
-        <el-table-column type="selection" width="55"> </el-table-column>
-        <el-table-column
-          width="100"
-          align="center"
-          label="用户编号"
-          prop="userId"
-        />
-        <el-table-column
-          width="200"
-          align="center"
-          label="用户名"
-          prop="loginName"
-        />
-        <el-table-column width="100" align="center" label="性别" prop="sex">
-          <template slot-scope="scope">
-            <span v-if="scope.row.sex === 0">男</span>
-            <span v-else>女</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          width="200"
-          align="center"
-          label="email"
-          prop="email"
-        />
-        <el-table-column
-          width="180"
-          align="center"
-          label="创建人"
-          prop="createBy"
-        />
-        <el-table-column
-          width="150"
-          align="center"
-          label="真实姓名"
-          prop="userName"
-        />
-        <el-table-column width="200" align="center" label="状态" prop="status">
-          <template slot-scope="scope">
-            <el-switch
-              v-model="scope.row.status"
-              active-value="0"
-              inactive-value="1"
-              @change="handleStatusChange(scope.row)"
-              active-color="#13ce66"
-              inactive-color="#ff4949"
+              size="mini"
+              type="text"
+              icon="el-icon-edit"
+              @click="upUser(scope.row)"
+              >修改</el-button
             >
-            </el-switch>
-          </template>
-        </el-table-column>
-        <el-table-column
-          width="200"
-          align="center"
-          label="介绍"
-          prop="remark"
-        />
-        <!-- 按钮区域 -->
-        <el-table-column width="230" align="center" label="操作">
-          <template slot-scope="scope">
-            <el-tooltip
-              :enterable="false"
-              class="item"
-              effect="dark"
-              content="修改用户"
-              placement="top"
+          </el-tooltip>
+          <el-tooltip
+            :enterable="false"
+            class="item"
+            effect="dark"
+            content="删除用户"
+            placement="top"
+          >
+            <el-button
+              v-if="scope.row.userId !== 1"
+              size="mini"
+              type="text"
+              icon="el-icon-delete"
+              @click="delUser(scope.row)"
+              >删除</el-button
             >
-              <el-button
-                size="mini"
-                type="text"
-                icon="el-icon-edit"
-                @click="upUser(scope.row)"
-                >修改</el-button
-              >
-            </el-tooltip>
-            <el-tooltip
-              :enterable="false"
-              class="item"
-              effect="dark"
-              content="删除用户"
-              placement="top"
+          </el-tooltip>
+          <el-tooltip
+            :enterable="false"
+            class="item"
+            effect="dark"
+            content="重置密码"
+            placement="top"
+          >
+            <el-button
+              v-if="scope.row.userId !== 1"
+              size="mini"
+              type="text"
+              icon="el-icon-s-check"
+              @click="upUserPassword(scope.row)"
+              >重置密码</el-button
             >
-              <el-button
-                v-if="scope.row.userId !== 1"
-                size="mini"
-                type="text"
-                icon="el-icon-delete"
-                @click="delUser(scope.row)"
-                >删除</el-button
-              >
-            </el-tooltip>
-            <el-tooltip
-              :enterable="false"
-              class="item"
-              effect="dark"
-              content="重置密码"
-              placement="top"
-            >
-              <el-button
-                v-if="scope.row.userId !== 1"
-                size="mini"
-                type="text"
-                icon="el-icon-s-check"
-                @click="upUserPassword(scope.row)"
-                >重置密码</el-button
-              >
-            </el-tooltip>
-          </template>
-        </el-table-column>
-      </el-table>
-      <!-- 分页区域 -->
-      <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="queryInfo.page"
-        :page-sizes="[10, 20, 30, 50]"
-        :page-size="queryInfo.pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
-      >
-      </el-pagination>
-    </el-card>
+          </el-tooltip>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!-- 分页区域 -->
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="queryInfo.page"
+      :page-sizes="[10, 20, 30, 50]"
+      :page-size="queryInfo.pageSize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total"
+    >
+    </el-pagination>
+
     <!-- 添加/修改用户的对话框 -->
     <el-dialog
       :title="title"
@@ -354,43 +337,54 @@ export default {
     },
     //  删除用户
     delUser(row) {
-      this.$confirm('您确定要删除Id为'+ row.userId +'的数据项?', '提示', {
+      this.$confirm('您确定要删除Id为' + row.userId + '的数据项?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$http.post('user/delUserById',{userId: row.userId}).then(res =>{
-          this.$message({
-            message: '删除成功',
-            type: 'success',
-          })
-          this.getUserList()
+        type: 'warning',
+      })
+        .then(() => {
+          this.$http
+            .post('user/delUserById', { userId: row.userId })
+            .then((res) => {
+              this.$message({
+                message: '删除成功',
+                type: 'success',
+              })
+              this.getUserList()
+            })
         })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        });          
-      });
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除',
+          })
+        })
     },
     // 重置密码
     upUserPassword(row) {
       this.$prompt('请输入密码', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-      }).then(({ value }) => {
-        this.$http.post('user/upUserPasswordById',{userId: row.userId,password: value}).then(res =>{
+      })
+        .then(({ value }) => {
+          this.$http
+            .post('user/upUserPasswordById', {
+              userId: row.userId,
+              password: value,
+            })
+            .then((res) => {
+              this.$message({
+                message: '修改成功',
+                type: 'success',
+              })
+            })
+        })
+        .catch(() => {
           this.$message({
-            message: '修改成功',
-            type: 'success',
+            type: 'info',
+            message: '取消输入',
           })
         })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '取消输入'
-        });       
-      });
     },
     // 提交表单
     submitForm(row) {

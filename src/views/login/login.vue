@@ -62,8 +62,8 @@ export default {
         ],
       },
       formdata: {
-        loginName: '',
-        password: '',
+        loginName: 'admin',
+        password: '123456',
       },
     }
   },

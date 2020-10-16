@@ -139,7 +139,7 @@ export default {
   width: 250px;
   border: none;
   position: absolute;
-  left: 1550px;
+  left: 1450px;
 }
 
 .el-icon-location {
